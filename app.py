@@ -20,16 +20,20 @@ def load_systems() :
     logger.info("Initializing system engines...") 
     try : 
         sent_engine = SentimentEngine() 
+
         return { 
             "data": FinancialDataFetcher(), 
-            "sentiment": SentimentEngine(), 
-            "explainer": SentimentExplainer(), 
-            "llm": LLMEngine()  
+            "sentiment": sent_engine, 
+            "explainer": SentimentExplainer( 
+                sent_engine.model, 
+                sent_engine.tokenizer 
+            ), 
+            "llm": LLMEngine() 
         } 
+
     except Exception as e : 
         logger.critical(f"Failed to initialize systems: {e}", exc_info=True) 
         raise 
-
 # 3. Data Caching 
 @st.cache_data(ttl=3600) 
 def get_news(ticker) : 
